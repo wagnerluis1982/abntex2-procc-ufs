@@ -19,11 +19,8 @@
 %% abntex2-modelo-include-comandos and abntex2-modelo-references.bib
 %%
 
-%% Wagner Macedo renamed the files:
-%%
-%% abntex2-modelo-trabalho-academico.tex -> abntex2-modelo-procc-ufs.tex
-%% abntex2-modelo-include-comandos.tex -> include-comandos.tex
-%% abntex2-modelo-references.bib -> references.bib
+%% Este modelo foi adaptado para adequar-se ao modelo de Dissertação de Mestrado
+%% do PROCC UFS por Wagner Macedo.
 %%
 
 % ------------------------------------------------------------------------
@@ -35,11 +32,12 @@
 % ------------------------------------------------------------------------
 % ------------------------------------------------------------------------
 
+\PassOptionsToPackage{hyphens}{url}
+
 \documentclass[
 	% -- opções da classe memoir --
 	12pt,				% tamanho da fonte
-	openright,			% capítulos começam em pág ímpar (insere página vazia caso preciso)
-	twoside,			% para impressão em verso e anverso. Oposto a oneside
+	oneside,			% para impressão apenas no anverso
 	a4paper,			% tamanho do papel.
 	% -- opções da classe abntex2 --
 	%chapter=TITLE,		% títulos de capítulos convertidos em letras maiúsculas
@@ -48,15 +46,13 @@
 	%subsubsection=TITLE,% títulos de subsubseções convertidos em letras maiúsculas
 	% -- opções do pacote babel --
 	english,			% idioma adicional para hifenização
-	french,				% idioma adicional para hifenização
-	spanish,			% idioma adicional para hifenização
 	brazil				% o último idioma é o principal do documento
 	]{abntex2}
 
 % ---
 % Pacotes básicos
 % ---
-\usepackage{lmodern}			% Usa a fonte Latin Modern
+\usepackage{txfonts}			% Usa a fonte Times
 \usepackage[T1]{fontenc}		% Selecao de codigos de fonte.
 \usepackage[utf8]{inputenc}		% Codificacao do documento (conversão automática dos acentos)
 \usepackage{lastpage}			% Usado pela Ficha catalográfica
@@ -64,6 +60,16 @@
 \usepackage{color}				% Controle das cores
 \usepackage{graphicx}			% Inclusão de gráficos
 \usepackage{microtype} 			% para melhorias de justificação
+
+% ---
+% Pacotes básicos - extra
+% ---
+\usepackage{caption}            % Melhor controle dos captions
+\usepackage{subcaption}         % Inclusão de subfiguras
+
+% Insere páginas PDF
+\usepackage{pdfpages}
+\newcommand{\includepaper}[1]{\includepdf[width=\paperwidth,height=!]{#1}}
 % ---
 
 % ---
@@ -73,54 +79,162 @@
 % ---
 
 % ---
+% Customizações para ficar de acordo com as normas da UFS
+% ---
+% Renomeada a seção "Lista de ilustrações"
+\addto\captionsbrazil{%
+  \renewcommand{\listfigurename}{Lista de figuras}%
+}
+% ---
+% Fontes dos capítulos em serifa e negrito
+\renewcommand{\ABNTEXchapterfont}{\rmfamily\bfseries}
+% ---
+% Formatação da Capa
+\renewcommand{\imprimircapa}{%
+  \begin{capa}%
+    \center
+    \bfseries\imprimirinstituicao
+
+    \vfill
+    \ABNTEXchapterfont\bfseries\LARGE\imprimirtitulo
+
+    \vfill
+    \ABNTEXchapterfont\large\imprimirautor
+
+    \vfill
+    \large\imprimirlocal\\
+    \large\imprimirdata
+
+    \vspace*{1cm}
+  \end{capa}
+}
+% ---
+% Formatação da Folha de Rosto
+\makeatletter
+\renewcommand{\folhaderostocontent}{
+  \begin{center}
+    {\bfseries\imprimirinstituicao}
+
+    \vfill
+    {\ABNTEXchapterfont\large\imprimirautor}
+
+    \vfill
+    \begin{center}
+      \ABNTEXchapterfont\bfseries\Large\imprimirtitulo
+    \end{center}
+
+    \vfill
+    \hfill
+    \begin{minipage}{.53\textwidth}
+      \SingleSpacing
+       \imprimirpreambulo
+     \end{minipage}%
+
+    \vfill
+    {\large\imprimirorientadorRotulo~\imprimirorientador\par}
+    \abntex@ifnotempty{\imprimircoorientador}{%
+       {\large\imprimircoorientadorRotulo~\imprimircoorientador}%
+    }%
+
+    \vfill
+    {\large\imprimirlocal}\\
+    {\large\imprimirdata}
+    \vspace*{1cm}
+
+  \end{center}
+}
+\makeatother
+
+% ---
+% Comando \url sem "<" e ">"
+% ---
+\DeclareUrlCommand\oNoLinkUrl{\def\UrlLeft{}\def\UrlRight{}\urlstyle{rm}}
+\let\oHref\href % garante uso do \href sem futuras modificações
+\let\oUrl\url   % guarda \url original
+\renewcommand{\url}[1]{\oHref{#1}{\oNoLinkUrl{#1}}}
+
+% ---
+% Um \texttt menos problemático com as margens
+% ---
+\DeclareUrlCommand\oTextTT{\def\UrlLeft{}\def\UrlRight{}\urlstyle{tt}}
+\let\texttt\oTextTT
+
+% ---
+% Outros pacotes e configurações
+% ---
+
+% permite verbatim em notas de rodapé
+% ---
+\usepackage{fancyvrb}
+\VerbatimFootnotes
+% tabelas
+% ---
+\usepackage{longtable,booktabs,tabularx}
+\usepackage{afterpage}
+% figuras
+% ---
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+% ---
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% tightlist
+% ---
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% ---
+% Único contador para equações matemáticas
+% ---
+\counterwithout{equation}{chapter}
+
+% ---
+% Numeracao das figuras e tabelas por capítulo
+% ---
+\counterwithin{figure}{chapter}
+\counterwithin{table}{chapter}
+% ---
+
+% ---
 % Pacotes de citações
 % ---
-\usepackage[brazilian,hyperpageref]{backref}	 % Paginas com as citações na bibl
-\usepackage[alf]{abntex2cite}	% Citações padrão ABNT
+% Citações padrão ABNT
+\usepackage[alf]{abntex2cite}
+
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 
 % ---
 % CONFIGURAÇÕES DE PACOTES
 % ---
 
 % ---
-% Configurações do pacote backref
-% Usado sem a opção hyperpageref de backref
-\renewcommand{\backrefpagesname}{Citado na(s) página(s):~}
-% Texto padrão antes do número das páginas
-\renewcommand{\backref}{}
-% Define os textos da citação
-\renewcommand*{\backrefalt}[4]{
-	\ifcase #1 %
-		Nenhuma citação no texto.%
-	\or
-		Citado na página #2.%
-	\else
-		Citado #1 vezes nas páginas #2.%
-	\fi}%
-% ---
-
-% ---
 % Informações de dados para CAPA e FOLHA DE ROSTO
 % ---
-\titulo{Modelo Canônico de\\ Trabalho Acadêmico com \abnTeX}
-\autor{Equipe \abnTeX}
-\local{Brasil}
-\data{2014, v-1.9.2}
-\orientador{Lauro César Araujo}
-\coorientador{Equipe \abnTeX}
-\instituicao{%
-  Universidade do Brasil -- UBr
+\titulo{Modelo Não Oficial de Dissertação de Mestrado do PROCC~UFS}
+\autor{Wagner Macedo}
+\local{São Cristóvão}
+\data{2016}
+\orientador{Prof. Dr. Fulano de Tal}
+\coorientador{Prof. Dr. Ciclano da Silva}
+\instituicao{\uppercase{%
+  Universidade Federal de Sergipe
   \par
-  Faculdade de Arquitetura da Informação
+  Centro de Ciências Exatas e Tecnológicas
   \par
-  Programa de Pós-Graduação}
-\tipotrabalho{Tese (Doutorado)}
+  Programa de Pós-graduação em Ciência da Computação}}
+\tipotrabalho{Dissertação (Mestrado)}
 % O preambulo deve conter o tipo do trabalho, o objetivo,
 % o nome da instituição e a área de concentração
-\preambulo{Modelo canônico de trabalho monográfico acadêmico em conformidade com
-as normas ABNT apresentado à comunidade de usuários \LaTeX.}
+\preambulo{Dissertação apresentada ao Programa de Pós-Graduação em Ciência da
+Computação (PROCC) da Universidade Federal de Sergipe (UFS) como parte
+de requisito para obtenção do título de Mestre em Ciência da Computação.}
 % ---
-
 
 % ---
 % Configurações de aparência do PDF final
@@ -136,8 +250,9 @@ as normas ABNT apresentado à comunidade de usuários \LaTeX.}
 		pdfauthor={\@author},
     	pdfsubject={\imprimirpreambulo},
 	    pdfcreator={LaTeX with abnTeX2},
-		pdfkeywords={abnt}{latex}{abntex}{abntex2}{trabalho acadêmico},
-		colorlinks=true,       		% false: boxed links; true: colored links
+		pdfkeywords={abnt, latex, abntex, abntex2, disseração},
+		pdfborder=0 0 0,
+		colorlinks=false,       	% false: boxed links; true: colored links
     	linkcolor=blue,          	% color of internal links
     	citecolor=blue,        		% color of links to bibliography
     	filecolor=magenta,      		% color of file links
@@ -162,6 +277,9 @@ as normas ABNT apresentado à comunidade de usuários \LaTeX.}
 % ---
 \makeindex
 % ---
+
+% Hyphenation
+\hyphenation{}
 
 % ----
 % Início do documento
@@ -195,13 +313,13 @@ as normas ABNT apresentado à comunidade de usuários \LaTeX.}
 
 % Isto é um exemplo de Ficha Catalográfica, ou ``Dados internacionais de
 % catalogação-na-publicação''. Você pode utilizar este modelo como referência.
-% Porém, provavelmente a biblioteca da sua universidade lhe fornecerá um PDF
-% com a ficha catalográfica definitiva após a defesa do trabalho. Quando estiver
-% com o documento, salve-o como PDF no diretório do seu projeto e substitua todo
-% o conteúdo de implementação deste arquivo pelo comando abaixo:
+% Porém, a Biblioteca Central da UFS lhe fornecerá um PDF com a ficha
+% catalográfica definitiva após a defesa do trabalho. Quando estiver com o
+% documento, salve-o como PDF no diretório do seu projeto e substitua todo o
+% conteúdo de implementação da ficha pelo comando abaixo:
 %
 % \begin{fichacatalografica}
-%     \includepdf{fig_ficha_catalografica.pdf}
+%     \includepaper{ficha-catalografica-bicen.pdf}
 % \end{fichacatalografica}
 \begin{fichacatalografica}
 	\vspace*{\fill}					% Posição vertical
@@ -239,32 +357,43 @@ as normas ABNT apresentado à comunidade de usuários \LaTeX.}
 % ---
 
 % ---
-% Inserir errata
+% Inserir banca examinadora
 % ---
-\begin{errata}
-Elemento opcional da \citeonline[4.2.1.2]{NBR14724:2011}. Exemplo:
+\begin{folhadeaprovacao}[Banca Examinadora]
 
-\vspace{\onelineskip}
+  \begin{center}
+    {\ABNTEXchapterfont\large\imprimirautor}
 
-FERRIGNO, C. R. A. \textbf{Tratamento de neoplasias ósseas apendiculares com
-reimplantação de enxerto ósseo autólogo autoclavado associado ao plasma
-rico em plaquetas}: estudo crítico na cirurgia de preservação de membro em
-cães. 2011. 128 f. Tese (Livre-Docência) - Faculdade de Medicina Veterinária e
-Zootecnia, Universidade de São Paulo, São Paulo, 2011.
+    \vspace*{\fill}
+    \begin{center}
+      \ABNTEXchapterfont\bfseries\Large\imprimirtitulo
+    \end{center}
+    \vspace*{\fill}
 
-\begin{table}[htb]
-\center
-\footnotesize
-\begin{tabular}{|p{1.4cm}|p{1cm}|p{3cm}|p{3cm}|}
-  \hline
-   \textbf{Folha} & \textbf{Linha}  & \textbf{Onde se lê}  & \textbf{Leia-se}  \\
-    \hline
-    1 & 10 & auto-conclavo & autoconclavo\\
-   \hline
-\end{tabular}
-\end{table}
+    \hfill
+    \begin{minipage}{.53\textwidth}
+        \imprimirpreambulo
+    \end{minipage}%
+    \vspace*{\fill}
+   \end{center}
 
-\end{errata}
+  \begin{center}
+    \ABNTEXchapterfont\bfseries\large{\uppercase Banca Examinadora}
+    \vspace*{-1cm}
+  \end{center}
+
+   \setlength{\ABNTEXsignwidth}{10cm}
+   \setlength{\ABNTEXsignthickness}{0pt}
+   \assinatura{%
+      \imprimirorientador, Presidente\\%
+        Universidade Federal de Sergipe (UFS)}
+      \assinatura{Prof. Dr. Zé Ninguém, Membro\\%
+        Universidade Federal de Sergipe (UFS)}
+      \assinatura{Prof. Dr. Clark Kent, Membro\\%
+      Universidade de Krypton (UK)}
+
+   \vspace*{\fill}\vspace*{\fill}
+\end{folhadeaprovacao}
 % ---
 
 % ---
@@ -276,40 +405,35 @@ Zootecnia, Universidade de São Paulo, São Paulo, 2011.
 % do trabalho. Após isso, substitua todo o conteúdo deste arquivo por uma
 % imagem da página assinada pela banca com o comando abaixo:
 %
-% \includepdf{folhadeaprovacao_final.pdf}
+% \includepaper{folhadeaprovacao_final.pdf}
 %
 \begin{folhadeaprovacao}
-
   \begin{center}
-    {\ABNTEXchapterfont\large\imprimirautor}
-
-    \vspace*{\fill}\vspace*{\fill}
     \begin{center}
-      \ABNTEXchapterfont\bfseries\Large\imprimirtitulo
+      \ABNTEXchapterfont\bfseries\LARGE\imprimirtitulo
     \end{center}
-    \vspace*{\fill}
 
-    \hspace{.45\textwidth}
-    \begin{minipage}{.5\textwidth}
-        \imprimirpreambulo
+    \vfill
+    \hfill
+    \begin{minipage}{.51\textwidth}
+      Este exemplar corresponde à redação da Dissertação de Mestrado, sendo a
+      defesa do mestrando \textbf{\imprimirautor} para ser aprovada pela banca
+      examinadora.
     \end{minipage}%
-    \vspace*{\fill}
-   \end{center}
+  \end{center}
 
-   Trabalho aprovado. \imprimirlocal, 24 de novembro de 2012:
+  \vfill
+  \begin{center}
+    Trabalho aprovado. \imprimirlocal, 29 de fevereiro de 2016:
+  \end{center}
 
-   \assinatura{\textbf{\imprimirorientador} \\ Orientador}
-   \assinatura{\textbf{Professor} \\ Convidado 1}
-   \assinatura{\textbf{Professor} \\ Convidado 2}
-   %\assinatura{\textbf{Professor} \\ Convidado 3}
-   %\assinatura{\textbf{Professor} \\ Convidado 4}
+   \setlength{\ABNTEXsignwidth}{9cm}
+   \assinatura{\textbf{\imprimirorientador}\\Orientador}
+   \assinatura{\textbf{Prof. Dr. Ciclano da Silva}\\Membro}
+   \assinatura{\textbf{Prof. Dr. Beltrano dos Santos}\\Membro}
 
-   \begin{center}
-    \vspace*{0.5cm}
-    {\large\imprimirlocal}
-    \par
-    {\large\imprimirdata}
-    \vspace*{1cm}
+   \vfill
+   \vfill
   \end{center}
 
 \end{folhadeaprovacao}
@@ -322,8 +446,9 @@ Zootecnia, Universidade de São Paulo, São Paulo, 2011.
    \vspace*{\fill}
    \centering
    \noindent
-   \textit{ Este trabalho é dedicado às crianças adultas que,\\
-   quando pequenas, sonharam em se tornar cientistas.} \vspace*{\fill}
+   \textit{Este trabalho é dedicado àqueles\\
+           que amam compartilhar.} \vspace*{\fill}
+
 \end{dedicatoria}
 % ---
 
@@ -331,39 +456,8 @@ Zootecnia, Universidade de São Paulo, São Paulo, 2011.
 % Agradecimentos
 % ---
 \begin{agradecimentos}
-Os agradecimentos principais são direcionados à Gerald Weber, Miguel Frasson,
-Leslie H. Watter, Bruno Parente Lima, Flávio de Vasconcellos Corrêa, Otavio Real
-Salvador, Renato Machnievscz\footnote{Os nomes dos integrantes do primeiro
-projeto abn\TeX\ foram extraídos de
-\url{http://codigolivre.org.br/projects/abntex/}} e todos aqueles que
-contribuíram para que a produção de trabalhos acadêmicos conforme
-as normas ABNT com \LaTeX\ fosse possível.
-
-Agradecimentos especiais são direcionados ao Centro de Pesquisa em Arquitetura
-da Informação\footnote{\url{http://www.cpai.unb.br/}} da Universidade de
-Brasília (CPAI), ao grupo de usuários
-\emph{latex-br}\footnote{\url{http://groups.google.com/group/latex-br}} e aos
-novos voluntários do grupo
-\emph{\abnTeX}\footnote{\url{http://groups.google.com/group/abntex2} e
-\url{http://abntex2.googlecode.com/}}~que contribuíram e que ainda
-contribuirão para a evolução do \abnTeX.
-
+Seus agradecimentos...
 \end{agradecimentos}
-% ---
-
-% ---
-% Epígrafe
-% ---
-\begin{epigrafe}
-    \vspace*{\fill}
-	\begin{flushright}
-		\textit{``Não vos amoldeis às estruturas deste mundo, \\
-		mas transformai-vos pela renovação da mente, \\
-		a fim de distinguir qual é a vontade de Deus: \\
-		o que é bom, o que Lhe é agradável, o que é perfeito.\\
-		(Bíblia Sagrada, Romanos 12, 2)}
-	\end{flushright}
-\end{epigrafe}
 % ---
 
 % ---
@@ -382,7 +476,8 @@ contribuirão para a evolução do \abnTeX.
  resumo, antecedidas da expressão Palavras-chave:, separadas entre si por
  ponto e finalizadas também por ponto.
 
- \textbf{Palavras-chaves}: latex. abntex. editoração de texto.
+ \noindent
+ \textbf{Palavras-chaves}: latex, abntex, editoração de texto.
 \end{resumo}
 
 % resumo em inglês
@@ -390,34 +485,13 @@ contribuirão para a evolução do \abnTeX.
  \begin{otherlanguage*}{english}
    This is the english abstract.
 
-   \vspace{\onelineskip}
-
    \noindent
-   \textbf{Key-words}: latex. abntex. text editoration.
+   \textbf{Key-words}: latex, abntex, text editoration.
  \end{otherlanguage*}
 \end{resumo}
-
-% resumo em francês
-\begin{resumo}[Résumé]
- \begin{otherlanguage*}{french}
-    Il s'agit d'un résumé en français.
-
-   \textbf{Mots-clés}: latex. abntex. publication de textes.
- \end{otherlanguage*}
-\end{resumo}
-
-% resumo em espanhol
-\begin{resumo}[Resumen]
- \begin{otherlanguage*}{spanish}
-   Este es el resumen en español.
-
-   \textbf{Palabras clave}: latex. abntex. publicación de textos.
- \end{otherlanguage*}
-\end{resumo}
-% ---
 
 % ---
-% inserir lista de ilustrações
+% inserir lista de figuras
 % ---
 \pdfbookmark[0]{\listfigurename}{lof}
 \listoffigures*
@@ -442,24 +516,12 @@ contribuirão para a evolução do \abnTeX.
 % ---
 
 % ---
-% inserir lista de símbolos
-% ---
-\begin{simbolos}
-  \item[$ \Gamma $] Letra grega Gama
-  \item[$ \Lambda $] Lambda
-  \item[$ \zeta $] Letra grega minúscula zeta
-  \item[$ \in $] Pertence
-\end{simbolos}
-% ---
-
-% ---
 % inserir o sumario
 % ---
 \pdfbookmark[0]{\contentsname}{toc}
 \tableofcontents*
 \cleardoublepage
 % ---
-
 
 
 % ----------------------------------------------------------
@@ -470,8 +532,7 @@ contribuirão para a evolução do \abnTeX.
 % ----------------------------------------------------------
 % Introdução (exemplo de capítulo sem numeração, mas presente no Sumário)
 % ----------------------------------------------------------
-\chapter*[Introdução]{Introdução}
-\addcontentsline{toc}{chapter}{Introdução}
+\chapter{Introdução}
 % ----------------------------------------------------------
 
 Este documento e seu código-fonte são exemplos de referência de uso da classe
@@ -513,23 +574,12 @@ Equipe \abnTeX
 Lauro César Araujo
 
 
-% ----------------------------------------------------------
-% PARTE
-% ----------------------------------------------------------
-\part{Preparação da pesquisa}
-% ----------------------------------------------------------
-
 % ---
 % Capitulo com exemplos de comandos inseridos de arquivo externo
 % ---
 \include{include-comandos}
 % ---
 
-% ----------------------------------------------------------
-% PARTE
-% ----------------------------------------------------------
-\part{Referenciais teóricos}
-% ----------------------------------------------------------
 
 % ---
 % Capitulo de revisão de literatura
@@ -545,11 +595,6 @@ Lauro César Araujo
 
 \lipsum[2-3]
 
-% ----------------------------------------------------------
-% PARTE
-% ----------------------------------------------------------
-\part{Resultados}
-% ----------------------------------------------------------
 
 % ---
 % primeiro capitulo de Resultados
@@ -585,10 +630,9 @@ elementum}
 \phantompart
 
 % ---
-% Conclusão (outro exemplo de capítulo sem numeração e presente no sumário)
+% Conclusão
 % ---
-\chapter*[Conclusão]{Conclusão}
-\addcontentsline{toc}{chapter}{Conclusão}
+\chapter{Conclusão}
 % ---
 
 \lipsum[31-33]
@@ -602,6 +646,7 @@ elementum}
 % ----------------------------------------------------------
 % Referências bibliográficas
 % ----------------------------------------------------------
+\let\url\oUrl
 \bibliography{references}
 
 % ----------------------------------------------------------
@@ -671,12 +716,5 @@ parturient montes nascetur ridiculus mus}
 \lipsum[32]
 
 \end{anexosenv}
-
-%---------------------------------------------------------------------
-% INDICE REMISSIVO
-%---------------------------------------------------------------------
-\phantompart
-\printindex
-%---------------------------------------------------------------------
 
 \end{document}
